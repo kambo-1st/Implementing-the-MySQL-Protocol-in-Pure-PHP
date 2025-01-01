@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  db:
+    image: mysql:latest
+    container_name: mysql_container
+    environment:
+      MYSQL_ROOT_PASSWORD: examplepassword
+      MYSQL_DATABASE: exampledb
+      MYSQL_USER: exampleuser
+      MYSQL_PASSWORD: examplepassword
+    ports:
+      - "3306:3306"
+    tmpfs:
+      - /var/lib/mysql:uid=999,gid=999
+      - /tmp
+    volumes:
+      - ./test-data.sql:/docker-entrypoint-initdb.d/dump.sql
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
+  php-cli:
+    build: .
+    container_name: php_cli_container
+    volumes:
+      - ./:/app
+    depends_on:
+      - db
